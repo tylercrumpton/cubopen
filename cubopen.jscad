@@ -1,10 +1,3 @@
-// title: OpenJSCAD.org Logo
-// author: Rene K. Mueller 
-// license: Creative Commons CC BY
-// URL: http://openjscad.org/#examples/logo.jscad
-// revision: 0.003
-// tags: Logo,Intersection,Sphere,Cube
-
 function mainCube(cubesize) {
     return cube({size: cubesize, center: true});
 }
