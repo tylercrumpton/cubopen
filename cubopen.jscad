@@ -1,98 +1,127 @@
-function mainCube(cubesize) {
-    return cube({size: cubesize, center: true});
-}
+function Cubopen(cubeEdgeLength, holeDiameter) {
+    this.cubeEdgeLength = cubeEdgeLength;
+    this.holeDiameter = holeDiameter;
+    this.block = cube({
+        size: cubeEdgeLength, 
+        center: true
+    });
 
-function addStraightHole(cube, face) {
-    var hole = cylinder({r: 0.85, h: 5, center: true});
-    if (face == 'left' || face == 'right') {
-        hole = hole.rotateX(90);
-    } else if (face == 'front' || face == 'back') {
-        hole = hole.rotateY(90);
-    }
-    return difference(cube, hole);
-}
 
-function addCurveHole(cube, face, rotation) {
-    var hole = torus({ri: (0.85), ro: (5.0/2)});
-    if (face == 'front') {
-        hole = hole.translate([5.0/2,5.0/2,0]);
-        hole = hole.rotateX(rotation*90);
-    } else if (face == 'back') {
-        hole = hole.translate([-5.0/2,5.0/2,0]);
-        hole = hole.rotateX(rotation*90);
-    } else if (face == 'left') {
-        hole = hole.translate([5.0/2,-5.0/2,0]);
-        hole = hole.rotateY(rotation*90);
-    } else if (face == 'right') {
-        hole = hole.translate([5.0/2,5.0/2,0]);
-        hole = hole.rotateY(rotation*90);
-    } 
-    return difference(cube, hole);
-}
-
-function addStraightChannel(cube, face, doRotate) {
-
-    var channel = cylinder({r: 0.85, h: 5, center: true});
-    channel = channel.rotateY(90);
-    if (doRotate) {
-        channel = channel.rotateZ(90);
-    }
-    channel = channel.translate([0,0,2.5]);
+    this.addStraightHole = function(face) {
+        var hole = cylinder({
+            r: this.holeDiameter,
+            h: this.cubeEdgeLength,
+            center: true
+        });
+        if (face == 'left' || face == 'right') {
+            hole = hole.rotateX(90);
+        } else if (face == 'front' || face == 'back') {
+            hole = hole.rotateY(90);
+        }
+        this.block = difference(this.block, hole);
+    };
     
-    if (face == 'front') {
-        channel = channel.rotateY(90);
-    } else if (face == 'left') {
-        channel = channel.rotateX(90);
-    } else if (face == 'right') {
-        channel = channel.rotateX(-90);
-    } else if (face == 'back') {
-        channel = channel.rotateY(-90);
-    } else if (face == 'bottom') {
-        channel = channel.rotateY(180);
-    }
-
-    return difference(cube, channel);
-}
-
-function addCurveChannel(cube, face, rotation) {
-    var channel = torus({ri: (0.85), ro: (5.0/2)});
-    channel = channel.translate([5.0/2,5.0/2,5.0/2]);
-    channel = channel.rotateZ(rotation*90);
+    this.addCurveHole = function(face, rotation) {
+        var halfLength = this.cubeEdgeLength/2.0;
+        var hole = torus({
+            ri: this.holeDiameter,
+            ro: halfLength
+        });
+        if (face == 'front') {
+            hole = hole.translate([halfLength,halfLength,0]);
+            hole = hole.rotateX(rotation*90);
+        } else if (face == 'back') {
+            hole = hole.translate([-halfLength,halfLength,0]);
+            hole = hole.rotateX(rotation*90);
+        } else if (face == 'left') {
+            hole = hole.translate([halfLength,-halfLength,0]);
+            hole = hole.rotateY(rotation*90);
+        } else if (face == 'right') {
+            hole = hole.translate([halfLength,halfLength,0]);
+            hole = hole.rotateY(rotation*90);
+        } 
+        this.block = difference(this.block, hole);
+    };
     
-    if (face == 'bottom') {
-        channel = channel.rotateY(180);
-    } else if (face == 'left') {
-        channel = channel.rotateX(90);
-    } else if (face == 'right') {
-        channel = channel.rotateX(-90);
-    } else if (face == 'front') {
+    this.addStraightChannel = function(face, rotation) {
+        var halfLength = this.cubeEdgeLength/2.0;
+        var channel = cylinder({
+            r: this.holeDiameter,
+            h: this.cubeEdgeLength,
+            center: true
+        });
         channel = channel.rotateY(90);
-    } else if (face == 'back') {
-        channel = channel.rotateY(-90);
-    } 
-    return difference(cube, channel);
+        channel = channel.rotateZ(rotation*90);
+        channel = channel.translate([0,0,halfLength]);
+        
+        if (face == 'front') {
+            channel = channel.rotateY(90);
+        } else if (face == 'left') {
+            channel = channel.rotateX(90);
+        } else if (face == 'right') {
+            channel = channel.rotateX(-90);
+        } else if (face == 'back') {
+            channel = channel.rotateY(-90);
+        } else if (face == 'bottom') {
+            channel = channel.rotateY(180);
+        }
+    
+        this.block = difference(this.block, channel);
+    };
+    
+    this.addCurveChannel = function(face, rotation) {
+        var halfLength = this.cubeEdgeLength/2.0;
+        var channel = torus({
+            ri: this.holeDiameter,
+            ro: halfLength
+        });
+        channel = channel.translate([
+            halfLength,
+            halfLength,
+            halfLength
+        ]);
+        channel = channel.rotateZ(rotation*90);
+        
+        if (face == 'bottom') {
+            channel = channel.rotateY(180);
+        } else if (face == 'left') {
+            channel = channel.rotateX(90);
+        } else if (face == 'right') {
+            channel = channel.rotateX(-90);
+        } else if (face == 'front') {
+            channel = channel.rotateY(90);
+        } else if (face == 'back') {
+            channel = channel.rotateY(-90);
+        } 
+        
+        this.block = difference(this.block, channel);
+    };
 }
 
 function main() {
-    var size = 5;
+    var testCubopen1 = new Cubopen(5, 0.85);
+    testCubopen1.addCurveHole("front", 1);
+    testCubopen1.addStraightChannel("top", false);
+    testCubopen1.addStraightChannel("top", true);
+    testCubopen1.addStraightChannel("bottom", false);
     
-    var block1 = mainCube(size);
-    block1 = addCurveHole(block1, "front", 1);
-    block1 = addStraightChannel(block1, "top", false);
-    block1 = addStraightChannel(block1, "top", true);
-    block1 = addStraightChannel(block1, "bottom", false);
+    var block1 = testCubopen1.block;
     block1 = block1.rotateZ(180);
     block1 = block1.translate([6, 0, 0]);
     
-    block2 = mainCube(size);
-    block2 = addStraightHole(block2, "front");
-    block2 = addStraightChannel(block2, "top", false);
-    block2 = addStraightChannel(block2, "bottom", true);
+    var testCubopen2 = new Cubopen(5, 0.85);
+    testCubopen2.addStraightHole("front");
+    testCubopen2.addStraightChannel("top", false);
+    testCubopen2.addStraightChannel("bottom", true);
     
-    block3 = mainCube(size);
-    block3 = addCurveChannel(block3, "top", 0);
-    block3 = addCurveChannel(block3, "bottom", 3);
-    block3 = addStraightHole(block3, "front");
+    var block2 = testCubopen2.block;
+    
+    var testCubopen3 = new Cubopen(5, 0.85);
+    testCubopen3.addCurveChannel("top", 0);
+    testCubopen3.addCurveChannel("bottom", 3);
+    testCubopen3.addStraightHole("front");
+    
+    var block3 = testCubopen3.block;
     block3 = block3.translate([-6, 0, 0]);
     
     return union(block1, block2, block3);
