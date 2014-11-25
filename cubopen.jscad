@@ -96,6 +96,51 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         
         this.block = difference(this.block, channel);
     };
+    
+    this.addLongCurveHole = function(face, rotation) {
+        var halfLength = cubeEdgeLength/2.0;
+        var tempCube = cube({
+            size:cubeEdgeLength,
+            center:false
+        });
+        var curvePart = torus({
+            ri: holeDiameter,
+            ro: halfLength
+        });
+        var straightPart = cylinder({
+            r: holeDiameter,
+            h: halfLength,
+            center: true
+        });
+        
+        straightPart = straightPart.rotateY(90);
+        straightPart = straightPart.translate([-halfLength/2,halfLength,0]);
+        tempCube = tempCube.translate([0,0,-halfLength]);
+        curvePart = intersection(curvePart, tempCube);
+        
+        var hole = union(curvePart, straightPart);
+        hole = hole.translate([-holeDiameter,-halfLength,0]);
+        
+        if (face == 'top') {
+            hole = hole.rotateY(90);
+            hole = hole.rotateZ(rotation*90);
+        } else if (face == 'bottom') {
+            hole = hole.rotateY(-90);
+            hole = hole.rotateZ(rotation*90);
+        } else if (face == 'back') {
+            hole = hole.rotateX(rotation*90);
+        } else if (face == 'front') {
+            hole = hole.rotateZ(180);
+            hole = hole.rotateX(rotation*90);
+        } else if (face == 'right') {
+            hole = hole.rotateZ(90);
+            hole = hole.rotateX(rotation*90);
+        } else if (face == 'left') {
+            hole = hole.rotateZ(-90);
+            hole = hole.rotateX(rotation*90);
+        } 
+        this.block = difference(this.block, hole);
+    };
 }
 
 function main() {
@@ -124,5 +169,13 @@ function main() {
     var block3 = testCubopen3.block;
     block3 = block3.translate([-6, 0, 0]);
     
-    return union(block1, block2, block3);
+    var testCubopen4 = new Cubopen(5, 0.85);
+    testCubopen4.addLongCurveHole("top", 0);
+    testCubopen4.addStraightChannel("top", false);
+    testCubopen4.addStraightChannel("top", true);
+    
+    var block4 = testCubopen4.block;
+    block4 = block4.translate([12,0,0]);
+    
+    return union(block1, block2, block3, block4);
 }
