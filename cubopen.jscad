@@ -144,7 +144,10 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
 }
 
 function main() {
-    var testCubopen1 = new Cubopen(5, 0.85);
+    var cubeSize = 50;
+    var holeDiameter = 8.5;
+
+    var testCubopen1 = new Cubopen(cubeSize, holeDiameter);
     testCubopen1.addCurveHole("front", 1);
     testCubopen1.addStraightChannel("top", false);
     testCubopen1.addStraightChannel("top", true);
@@ -152,30 +155,30 @@ function main() {
     
     var block1 = testCubopen1.block;
     block1 = block1.rotateZ(180);
-    block1 = block1.translate([6, 0, 0]);
+    block1 = block1.translate([cubeSize*1.1, 0, 0]);
     
-    var testCubopen2 = new Cubopen(5, 0.85);
+    var testCubopen2 = new Cubopen(cubeSize, holeDiameter);
     testCubopen2.addStraightHole("front");
     testCubopen2.addStraightChannel("top", false);
     testCubopen2.addStraightChannel("bottom", true);
     
     var block2 = testCubopen2.block;
     
-    var testCubopen3 = new Cubopen(5, 0.85);
+    var testCubopen3 = new Cubopen(cubeSize, holeDiameter);
     testCubopen3.addCurveChannel("top", 0);
     testCubopen3.addCurveChannel("bottom", 3);
     testCubopen3.addStraightHole("front");
     
     var block3 = testCubopen3.block;
-    block3 = block3.translate([-6, 0, 0]);
+    block3 = block3.translate([-cubeSize*1.1, 0, 0]);
     
-    var testCubopen4 = new Cubopen(5, 0.85);
+    var testCubopen4 = new Cubopen(cubeSize, holeDiameter);
     testCubopen4.addLongCurveHole("top", 0);
     testCubopen4.addStraightChannel("top", false);
     testCubopen4.addStraightChannel("top", true);
     
     var block4 = testCubopen4.block;
-    block4 = block4.translate([12,0,0]);
+    block4 = block4.translate([2*cubeSize*1.1,0,0]);
     
     return union(block1, block2, block3, block4);
 }
