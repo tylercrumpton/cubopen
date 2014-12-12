@@ -11,7 +11,8 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         var hole = cylinder({
             r: this.holeDiameter,
             h: this.cubeEdgeLength,
-            center: true
+            center: true,
+            fn:4
         });
         if (face == 'left' || face == 'right') {
             hole = hole.rotateX(90);
@@ -25,7 +26,8 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         var halfLength = this.cubeEdgeLength/2.0;
         var hole = torus({
             ri: this.holeDiameter,
-            ro: halfLength
+            ro: halfLength,
+            fni:4
         });
         if (face == 'front') {
             hole = hole.translate([halfLength,halfLength,0]);
@@ -48,7 +50,8 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         var channel = cylinder({
             r: this.holeDiameter,
             h: this.cubeEdgeLength,
-            center: true
+            center: true,
+            fn:4
         });
         channel = channel.rotateY(90);
         channel = channel.rotateZ(rotation*90);
@@ -73,7 +76,8 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         var halfLength = this.cubeEdgeLength/2.0;
         var channel = torus({
             ri: this.holeDiameter,
-            ro: halfLength
+            ro: halfLength,
+            fni:4
         });
         channel = channel.translate([
             halfLength,
@@ -105,12 +109,14 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         });
         var curvePart = torus({
             ri: holeDiameter,
-            ro: halfLength
+            ro: halfLength,
+            fni:4
         });
         var straightPart = cylinder({
             r: holeDiameter,
             h: halfLength,
-            center: true
+            center: true,
+            fn:4
         });
         
         straightPart = straightPart.rotateY(90);
