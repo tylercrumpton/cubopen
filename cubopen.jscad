@@ -1,6 +1,6 @@
 function Cubopen(cubeEdgeLength, holeDiameter) {
     this.cubeEdgeLength = cubeEdgeLength;
-    this.holeDiameter = holeDiameter;
+    this.holeRadius = holeDiameter/2.0;
     this.block = cube({
         size: cubeEdgeLength, 
         center: true
@@ -9,7 +9,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
 
     this.addStraightHole = function(face) {
         var hole = cylinder({
-            r: this.holeDiameter,
+            r: this.holeRadius,
             h: this.cubeEdgeLength,
             center: true,
             fn:4
@@ -25,7 +25,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     this.addCurveHole = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var hole = torus({
-            ri: this.holeDiameter,
+            ri: this.holeRadius,
             ro: halfLength,
             fni:4
         });
@@ -48,7 +48,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     this.addStraightChannel = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var channel = cylinder({
-            r: this.holeDiameter,
+            r: this.holeRadius,
             h: this.cubeEdgeLength,
             center: true,
             fn:4
@@ -75,7 +75,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     this.addCurveChannel = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var channel = torus({
-            ri: this.holeDiameter,
+            ri: this.holeRadius,
             ro: halfLength,
             fni:4
         });
@@ -102,18 +102,18 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     };
     
     this.addLongCurveHole = function(face, rotation) {
-        var halfLength = cubeEdgeLength/2.0;
+        var halfLength = this.cubeEdgeLength/2.0;
         var tempCube = cube({
-            size:cubeEdgeLength,
+            size:this.cubeEdgeLength,
             center:false
         });
         var curvePart = torus({
-            ri: holeDiameter,
+            ri: this.holeRadius,
             ro: halfLength,
             fni:4
         });
         var straightPart = cylinder({
-            r: holeDiameter,
+            r: this.holeRadius,
             h: halfLength,
             center: true,
             fn:4
@@ -125,7 +125,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         curvePart = intersection(curvePart, tempCube);
         
         var hole = union(curvePart, straightPart);
-        hole = hole.translate([-holeDiameter,-halfLength,0]);
+        hole = hole.translate([-this.holeRadius,-halfLength,0]);
         
         if (face == 'top') {
             hole = hole.rotateY(90);
@@ -151,7 +151,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
 
 function main() {
     var cubeSize = 50;
-    var holeDiameter = 8.5;
+    var holeDiameter = 16;
 
     var testCubopen1 = new Cubopen(cubeSize, holeDiameter);
     testCubopen1.addCurveHole("front", 1);
