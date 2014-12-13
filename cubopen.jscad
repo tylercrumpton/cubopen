@@ -1,6 +1,8 @@
-function Cubopen(cubeEdgeLength, holeDiameter) {
+function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
+    var sqrt2 = 1.41421356; // Square-root of 2
+    this.fn = squareHoles ? 4 : CSG.defaultResolution2D;
     this.cubeEdgeLength = cubeEdgeLength;
-    this.holeDiameter = holeDiameter;
+    this.holeRadius = squareHoles ? holeDiameter*sqrt2/2.0 : holeDiameter/2.0;
     this.block = cube({
         size: cubeEdgeLength, 
         center: true
@@ -9,9 +11,10 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
 
     this.addStraightHole = function(face) {
         var hole = cylinder({
-            r: this.holeDiameter,
+            r: this.holeRadius,
             h: this.cubeEdgeLength,
-            center: true
+            center: true,
+            fn:this.fn
         });
         if (face == 'left' || face == 'right') {
             hole = hole.rotateX(90);
@@ -24,8 +27,9 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     this.addCurveHole = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var hole = torus({
-            ri: this.holeDiameter,
-            ro: halfLength
+            ri: this.holeRadius,
+            ro: halfLength,
+            fni:this.fn
         });
         if (face == 'front') {
             hole = hole.translate([halfLength,halfLength,0]);
@@ -46,9 +50,10 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     this.addStraightChannel = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var channel = cylinder({
-            r: this.holeDiameter,
+            r: this.holeRadius,
             h: this.cubeEdgeLength,
-            center: true
+            center: true,
+            fn:this.fn
         });
         channel = channel.rotateY(90);
         channel = channel.rotateZ(rotation*90);
@@ -72,8 +77,9 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     this.addCurveChannel = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var channel = torus({
-            ri: this.holeDiameter,
-            ro: halfLength
+            ri: this.holeRadius,
+            ro: halfLength,
+            fni:this.fn
         });
         channel = channel.translate([
             halfLength,
@@ -98,19 +104,21 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
     };
     
     this.addLongCurveHole = function(face, rotation) {
-        var halfLength = cubeEdgeLength/2.0;
+        var halfLength = this.cubeEdgeLength/2.0;
         var tempCube = cube({
-            size:cubeEdgeLength,
+            size:this.cubeEdgeLength,
             center:false
         });
         var curvePart = torus({
-            ri: holeDiameter,
-            ro: halfLength
+            ri: this.holeRadius,
+            ro: halfLength,
+            fni:this.fn
         });
         var straightPart = cylinder({
-            r: holeDiameter,
+            r: this.holeRadius,
             h: halfLength,
-            center: true
+            center: true,
+            fn:this.fn
         });
         
         straightPart = straightPart.rotateY(90);
@@ -119,7 +127,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
         curvePart = intersection(curvePart, tempCube);
         
         var hole = union(curvePart, straightPart);
-        hole = hole.translate([-holeDiameter,-halfLength,0]);
+        hole = hole.translate([-this.holeRadius,-halfLength,0]);
         
         if (face == 'top') {
             hole = hole.rotateY(90);
@@ -145,7 +153,7 @@ function Cubopen(cubeEdgeLength, holeDiameter) {
 
 function main() {
     var cubeSize = 50;
-    var holeDiameter = 8.5;
+    var holeDiameter = 16;
 
     var testCubopen1 = new Cubopen(cubeSize, holeDiameter);
     testCubopen1.addCurveHole("front", 1);
