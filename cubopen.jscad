@@ -1,7 +1,8 @@
 function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
+    var sqrt2 = 1.41421356; // Square-root of 2
     this.fn = squareHoles ? 4 : CSG.defaultResolution2D;
     this.cubeEdgeLength = cubeEdgeLength;
-    this.holeRadius = holeDiameter/2.0;
+    this.holeRadius = squareHoles ? holeDiameter*sqrt2/2.0 : holeDiameter/2.0;
     this.block = cube({
         size: cubeEdgeLength, 
         center: true
