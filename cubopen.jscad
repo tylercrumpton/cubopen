@@ -24,6 +24,35 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
         this.block = difference(this.block, hole);
     };
     
+    this.addStraightDropHole = function(face) {
+        var slice = CSG.Polygon.createFromPoints([
+            [-this.holeRadius, -this.holeRadius],
+            [this.holeRadius, -this.holeRadius],
+            [this.holeRadius, this.holeRadius],
+            [-this.holeRadius,this.holeRadius]
+        ]);
+        slice = slice.rotateY(90);
+        slice = slice.rotateX(45);
+        var a = (this.cubeEdgeLength/2.0)-this.holeRadius;
+        var b = Math.PI;
+        var cubeEdgeLength = this.cubeEdgeLength;
+        var hole = slice.solidFromSlices({
+            numslices: 10,
+            callback: function(t, slice) {
+                var angle = Math.atan(a*b*Math.sin(b*t)/cubeEdgeLength)*180/Math.PI;
+                var ret = this.rotateY(angle);
+                ret = ret.translate([t*cubeEdgeLength, 0, a*Math.cos(b*t)]);
+                return ret;
+            }
+        });
+        
+        //TODO: Translate to line up properly
+        
+        //TODO: Rotate based on 'face'
+        
+        this.block = difference(this.block, hole);
+    };
+    
     this.addCurveHole = function(face, rotation) {
         var halfLength = this.cubeEdgeLength/2.0;
         var hole = torus({
