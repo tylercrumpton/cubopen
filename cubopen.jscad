@@ -3,6 +3,7 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
     this.fn = squareHoles ? 4 : CSG.defaultResolution2D;
     this.cubeEdgeLength = cubeEdgeLength;
     this.holeRadius = squareHoles ? holeDiameter*sqrt2/2.0 : holeDiameter/2.0;
+    this.offsetRadius = holeDiameter/2.0; // For determining placement of hole mouths
     this.block = cube({
         size: cubeEdgeLength, 
         center: true
@@ -127,7 +128,7 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
         curvePart = intersection(curvePart, tempCube);
         
         var hole = union(curvePart, straightPart);
-        hole = hole.translate([-this.holeRadius,-halfLength,0]);
+        hole = hole.translate([-this.offsetRadius,-halfLength,0]);
         
         if (face == 'top') {
             hole = hole.rotateY(90);
