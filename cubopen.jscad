@@ -7,6 +7,7 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
         this.squareHoleSide = holeDiameter;
     }
     this.squareHoles = squareHoles;
+    this.offsetRadius = holeDiameter/2.0; // For determining placement of hole mouths
     this.block = cube({
         size: cubeEdgeLength, 
         center: true
@@ -168,7 +169,7 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
         curvePart = intersection(curvePart, tempCube);
         
         var hole = union(curvePart, straightPart);
-        hole = hole.translate([-this.holeRadius,-halfLength,0]);
+        hole = hole.translate([-this.offsetRadius,-halfLength,0]);
         
         if (face == 'top') {
             hole = hole.rotateY(90);
