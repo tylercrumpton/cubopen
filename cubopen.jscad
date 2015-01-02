@@ -3,6 +3,9 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
     this.fn = squareHoles ? 4 : CSG.defaultResolution2D;
     this.cubeEdgeLength = cubeEdgeLength;
     this.holeRadius = squareHoles ? holeDiameter*sqrt2/2.0 : holeDiameter/2.0;
+    if (squareHoles) {
+        this.squareHoleSide = holeDiameter;
+    }
     this.squareHoles = squareHoles;
     this.block = cube({
         size: cubeEdgeLength, 
@@ -27,16 +30,15 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
     
     this.addStraightDropHole = function(face) {
         if (this.squareHoles) {
-            var sqrt2 = 1.41421356;
             var slice = CSG.Polygon.createFromPoints([
-                [-this.holeRadius/sqrt2, -this.holeRadius/sqrt2],
-                [this.holeRadius/sqrt2, -this.holeRadius/sqrt2],
-                [this.holeRadius/sqrt2, this.holeRadius/sqrt2],
-                [-this.holeRadius/sqrt2,this.holeRadius/sqrt2]
+                [-this.squareHoleSide/2.0, -this.squareHoleSide/2.0],
+                [this.squareHoleSide/2.0, -this.squareHoleSide/2.0],
+                [this.squareHoleSide/2.0, this.squareHoleSide/2.0],
+                [-this.squareHoleSide/2.0,this.squareHoleSide/2.0]
             ]);
             slice = slice.rotateY(90);
             slice = slice.rotateX(45);
-            var a = (this.cubeEdgeLength/2.0)-this.holeRadius;
+            var a = ( (this.cubeEdgeLength/2.0)-this.squareHoleSide/2.0 ) / 2.0;
             var b = Math.PI;
             var cubeEdgeLength = this.cubeEdgeLength;
             var hole = slice.solidFromSlices({
@@ -49,9 +51,15 @@ function Cubopen(cubeEdgeLength, holeDiameter, squareHoles) {
                 }
             });
             
-            //TODO: Translate to line up properly
+            hole = hole.translate([-this.cubeEdgeLength/2.0, 0, -a]);
             
-            //TODO: Rotate based on 'face'
+            if (face == 'right') {
+                hole = hole.rotateZ(90);
+            } else if (face == 'left') {
+                hole = hole.rotateZ(-90);
+            } else if (face == 'back') {
+                hole = hole.rotateZ(180);
+            }
             
             this.block = difference(this.block, hole);
         }
